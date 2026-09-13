@@ -104,7 +104,7 @@ numbers against the source's rather than against a copy of itself."*
 Worst error 0.05%, median 0.0003%. The three that do not reproduce "are
 recorded as refusals with reasons rather than shipped."
 
-### The audit's own controls: 12 of 12
+### The audit's own controls: 11 of 12 on the source's own bytes
 
 The best single result here, and the one with no equivalent in the `cft`
 projects. Six claim–source pairings were planted among the real ones in
@@ -122,14 +122,29 @@ something it did not introduce, with an invented quotation; a specification
 section number that exists nowhere in the document; a statistical transform
 with its constant transplanted from an earlier author.
 
-**Score: 12/12.** Two independent auditors, every control classified
-correctly, on fetched bytes. The key records *how*: one fetched the Russian
-original, another found zero-hit searches for a section that does not exist.
-The same audits re-verified about **86 load-bearing quotations** and found zero
-fabrications.
+**Score: 11 of 12 on the named source's own bytes.** Two independent
+auditors, every control classified correctly; the twelfth was reached only
+through three independent secondary sources, because the primary was
+closed-access and just one auditor got to it. The key records *how* each was
+caught: one fetched the Russian original, another found zero-hit searches for a
+section that does not exist. The same audits re-verified about **86
+load-bearing quotations** and found zero fabrications.
 
 That is what "the agent checked the sources" looks like when it is a
 measurement instead of an assurance.
+
+**And two things about it that only checking revealed**, both now in
+[METHOD.md](METHOD.md) §9 as requirements rather than as notes. The controls,
+the key and both audit reports landed in **one commit**, so the withholding
+that the score depends on cannot be established from the record — the fix is
+three commits, and it costs nothing. And three of the four planted answers were
+already documented correctly in sibling files *inside the corpus being
+audited*, which both auditors cite: the key was withheld, the answers were not.
+
+Neither makes the mechanism worse than any alternative. It remains the only
+thing in six repositories that converts an agent's reading into a number. It
+needed one more part, and finding that out is what the read-only sweep was
+for — the framework's own §9 applied to the framework's own §9.
 
 ---
 

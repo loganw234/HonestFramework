@@ -9,8 +9,11 @@ This is the template for METHOD §9: the mechanism that makes an agent's
 than code — a claim-to-source audit, a literature review, a dependency or
 security review, a reconciliation between two datasets.
 
-It is modelled directly on `atlas-darkroom`'s external-sources controls, which
-scored **12 of 12** across two independent auditors.
+It is modelled on a real programme whose controls scored **11 of 12 on the
+named source's own bytes** across two independent auditors — and whose one
+structural weakness is fixed below, in *The key, which lives elsewhere*: its
+controls and its key landed in the same commit, so the blinding could not be
+established afterwards.
 
 ---
 
@@ -107,6 +110,27 @@ verdict: which bytes they fetched and what they searched.
 Record the **model and date** beside the score. A detection rate is a property
 of that model, that prompt and that tooling, not of the method — so it is
 re-measured whenever any of the three changes.
+
+### Commit in three steps, or the blinding is unverifiable
+
+This is the part most easily lost, and it was lost in the programme this
+template is modelled on: if the controls and the key arrive in the repository
+together, no later reader can establish that the auditor did not read the
+answers, and the score rests on a claim about someone's working tree.
+
+1. commit the controls, mixed into the work, **key absent from the tree**;
+2. commit the audit reports;
+3. commit the key, and grade.
+
+Three commits, no extra effort, and `git log` becomes the evidence.
+
+### Check that your corpus does not already contain the answers
+
+Three of four planted faults in that programme were documented correctly in
+sibling files inside the very body of work being audited, and both auditors
+cite those siblings. That measures diligence within the corpus — worth
+something — but not whether the auditor went to the source. Before planting a
+fault, grep your own tree for its answer.
 
 ---
 

@@ -499,12 +499,30 @@ same registry keeps the compilation's "names are given with reservations"
 caveat by propagating it into each affected entry, rather than resolving it
 silently in either direction.
 
+### An unenforced marker decays to prose within one round
+
+The strongest evidence for the word *mechanically* in this section's title is
+what happens without it. The same sources programme defined exactly this idea
+in its own notation — bracket flags marking a quote reached by a proxy, a
+mirror, a citer's bibliography or an OCR restoration — and, unenforced, it
+died almost immediately: roughly **sixty indirect routes against fewer than
+fifteen flags**, with one file of twelve using the vocabulary as intended. The
+audit's verdict on it is the sentence to remember: *"Every one is honest in
+prose; almost none is machine-checkable."*
+
+The same round shows the related failure. A cap on one field is a pressure, not
+a limit: a 25-word quotation cap was honoured in the `Quote:` field and routed
+around in `Note:`, where no cap applied — nine of twelve files parking 26-to-43
+word quotations there, access dates routinely dropped. **A rule that constrains
+one field moves the behaviour to the next field.** Constrain the property, or
+check every field that can carry it.
+
 ### How you know it is working
 
 Add an inferred value without its marker and confirm it does not appear in
 the output. Then grep the shipped data for the marker and count: if the
 fraction is zero or implausibly low, the rule is being satisfied by
-relabelling rather than by honesty.
+relabelling rather than by honesty — or, as above, by a field nobody checks.
 
 ---
 
@@ -542,13 +560,61 @@ The design of the faults is the craft, and they are not caricatures:
 Each is a thing a plausibility check passes and a fetch fails. That is the
 entire selection criterion.
 
-Then the measurement: the key is withheld until both audits return, two
-independent auditors grade, and the result is recorded — **12 of 12,
-classified correctly, independently, "on fetched bytes rather than
-plausibility"**, with the key recording *how* each was caught (one fetched
-the Russian original; another found zero-hit searches for a section that does
-not exist). The same audits re-verified about eighty-six load-bearing quotes
-and found zero fabrications.
+Then the measurement: two independent auditors grade, and the result is
+recorded — **11 of 12 classified on the named source's own bytes**, with the
+key recording *how* each was caught (one fetched the Russian original; another
+found zero-hit searches for a section that does not exist). The twelfth was
+classified correctly from three independent *secondary* fetches, because the
+primary was closed-access and only the second auditor reached it. The same
+audits re-verified about eighty-six load-bearing quotes and found zero
+fabrications.
+
+### Make the blinding a property of the record, not of your working tree
+
+This is the part I got wrong, and it is worth more than the part I got right.
+
+That programme's instruction says the key is withheld until grading, and the
+instruction is real. But its controls, its key and both audit reports all
+landed in **one commit**. There is no state of the repository in which the
+controls exist without the key — so from the record, the blinding is a claim
+about somebody's working directory, and the score is a claim resting on it.
+Nothing is wrong with what happened; what is missing is any way for a later
+reader to establish it.
+
+The fix is three commits and costs nothing:
+
+1. commit the controls, mixed into the work, key absent from the tree;
+2. commit the audit reports;
+3. commit the key, and grade.
+
+Then `git log` is the evidence that the auditor could not have read the answers,
+and the score means what it says. A fourth precaution, from the same audit:
+**check whether your corpus already contains the answers.** Three of those four
+planted faults were documented correctly in sibling files *inside the body of
+work being audited*, and both auditors cite those siblings. The key was
+withheld; the answers were not. A control whose answer is reachable without
+leaving the repository is measuring diligence within the corpus, which is worth
+something — but it is not measuring whether the auditor went to the source.
+
+### Two ways to measure a judge with no key at all
+
+Both come from the same programme, and both work where a key is impractical.
+
+**Assign a few items twice, to independent auditors, and compare.** Two agents
+were each given the same claim; one reported the standard **fetched**, with a
+quoted formula, and the other reported that the figure "was not obtained from
+any standards text". They also disagreed arithmetically about the same
+expression — 9.0287 against 9.0291, where re-running it gives 9.029146. A
+deliberate overlap of a handful of items localises a false "fetched" without
+any planted fault and without a key.
+
+**Control the "not found" verdict too.** Three dossiers declared a source
+unreachable that the auditor then retrieved on the first try with plain `curl`
+and an ordinary user agent. Each false unreachability had silently downgraded a
+primary source to unverified — so *absence of evidence* has a false-positive
+mode produced by your own harness rather than by the world. Require a "silent"
+or "unreachable" verdict to record the route and the response, not just the
+outcome, and spot-check a sample of them.
 
 ### The judge's own failure mode
 
