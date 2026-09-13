@@ -1,0 +1,14 @@
+# Everything is LF in the repository and LF on checkout.
+#
+# This is not a style preference. templates/gate-runner.sh is a shipped bash
+# script, and a CRLF checkout makes bash fail on it with a syntax error naming
+# a token that ends in a carriage return - the same confusing failure this
+# repository's own checker produced against itself for one commit, by writing
+# to a text-mode pipe on Windows. A method repository that distributes a
+# broken script is not in a position to give advice.
+* text=auto eol=lf
+
+# Belt and braces for the executables, so an override elsewhere cannot reach
+# them.
+*.sh text eol=lf
+*.py text eol=lf
