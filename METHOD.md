@@ -76,21 +76,50 @@ physical data, not code you can run. The discipline is the same and one step
 is easy to get wrong: **commit the source's own independently documented
 figure alongside your value**, and compare against that.
 
-`atlas-optical` does exactly this. Its lens registry was extracted from an
-open compilation of historic prescriptions, and `data/dioptrique.json`
-carries, per entry, the page it came from *and the focal length the site
-documents independently* — committed, in the words of its own provenance
-file, "so that the tracing test compares this repository's numbers against
-the source's rather than against a copy of itself."
-
 That clause is the whole trap. A test that re-traces your own extracted
-numbers and finds them self-consistent has tested your arithmetic and
-nothing about whether the extraction was right.
+numbers and finds them self-consistent has tested your arithmetic and nothing
+about whether the extraction was right.
 
-The result is a measurement rather than a claim: **1040 of 1043 entries
-reproduce their documented focal length** (worst 0.05%, median 0.0003%), and
-the three that do not "are recorded as refusals with reasons rather than
-shipped" — §2 applied to data.
+### The trap has a second floor, and I fell through it
+
+`atlas-optical` extracts a lens registry from an open compilation of historic
+prescriptions and re-traces every one through its own surfaces. Its committed
+input carries **two** figures per entry: the focal length the source page
+*documents*, and the focal length the compiler *computed from the same
+prescription table*. The gate and the test use the **computed** one.
+
+So the comparison is an exact ray trace against somebody else's arithmetic on
+the same input — two implementations, one input. That is a real and useful
+check: it catches a parse error, a sign convention, a units mistake. It is not
+an external authority, and the repository's own errata says so more precisely
+than I first did:
+
+> *Tracing a page's table reproduces the focal length that page **computes** —
+> but [the compiler] computed that from the same table, so a mistyped radius
+> moves both numbers together and the check passes. The gate proves our parse
+> matches his arithmetic, not that his arithmetic was done on the patent's
+> numbers.*
+
+The numbers make the distinction concrete. Against the computed figure: median
+0.00033%, worst 0.0500% over 1,006 entries — agreement so tight it can only be
+two implementations of one calculation. Against the **documented** figure, on
+the same corpus: **189 of 1,040 disagree by 1% or more, 27 by 10% or more, the
+worst by 51.9%.** Same data, same day, and a completely different sentence about
+what is established.
+
+**So the rule needs its sharper form:** *a committed source figure is an
+external authority only if the source derived it from something other than the
+input you are feeding it.* Otherwise you have two parsers agreeing, which is
+worth having and is not what it looks like. The documented figure in that
+repository *is* committed — it is simply reported rather than gated, which is
+the honest arrangement once you know which of the two is which.
+
+I also wrote that the entries which fail to trace "are recorded as refusals with
+reasons rather than shipped." They are not. The thirty-four recorded refusals
+are pages that trace correctly and are refused as undescribable — a different
+set entirely — and the handful that fail to trace are reported to a console and
+filtered out, so neither their identity nor their reason survives in the
+repository. A refusal that exists only in a scrollback is not a record (§7).
 
 Two further rules fall out of it:
 
@@ -160,6 +189,21 @@ the report, where it reads as success.
   where you can: all 256 opcode values, every reserved bit, a null argument
   in each position. A refusal that is never exercised is a branch that has
   never run.
+
+### When behaviour cannot tell you *how* it refused, assert the source text
+
+Refusing by name and refusing by heuristic can be behaviourally identical on
+every input you have, and they are not the same promise: the heuristic will
+misclassify something you have not seen yet. Where that distinction matters and
+no test can observe it, `atlas-optical` asserts the **implementation strategy in
+the source** — requiring the literal `LEGACY_NOT_GLASS = frozenset({"IR"})` to
+be present, *"By file … not by a numeric heuristic that would drop real glass on
+a bad day"*, and requiring a specific other string to be **absent**.
+
+Asserting on source text is normally a bad idea and this is the case that earns
+it: the property under test is not what the code computes but how it decided,
+and that is visible nowhere else. Use it sparingly, and say in the test why
+behaviour was not enough.
 
 ### How you know it is working
 
@@ -260,6 +304,35 @@ test's filename.
   require whoever does the work to build it, run it, **confirm it fails**,
   and report both results. ParcelRound's rule, and the reason for it is exact:
   a control described but not run is worth nothing, so ask for its output.
+
+### Three questions a green gate cannot answer about itself
+
+**Is the skip condition true?** A data-gated test has two ways to lie and they
+are not equal. A positive assertion fails loudly when the data is missing; an
+*exclusion* check — "no rock salt in this catalogue" — passes vacuously against
+a catalogue that is not there, and `atlas-optical` names that as the worse of
+the two because *"it reports that no rock salt is in a catalogue that does not
+exist."* So the skip guard gets its own assertion beside it:
+`assert c, "the catalogue is empty; the skip guards above are wrong"`. **The
+skip condition is a claim, and it gets a gate.**
+
+**Does the exemption still deserve to exist?** One test in that repository's
+8,256 exempts a single lens by name. A second, separately named test asserts
+that the exempt lens still traces to its own focal length and still covers its
+image circle — *"The exemption above is only defensible while the lenses it
+names still behave … the exemption is hiding a fault rather than describing a
+design."* **Every exemption carries a test that re-derives its own
+justification**, or it quietly becomes cover for the next regression.
+
+**Does this signal fail often enough to be a gate at all?** A corpus-recurrence
+heuristic looked like a transcription-fault detector. Rather than adopt it, the
+author *measured its false-alarm rate against the registry* — **166 flags on
+perfectly good glass against 29 real hits** — and demoted it to a column of
+evidence beside a verdict it may not overrule, with the measurement committed in
+the module's own docstring. §3 proves a gate *can* fail; this is the other
+direction: a candidate that fails too often to be one. **A signal's rank — gate,
+evidence, or ignored — is set by its measured false-alarm rate, and the
+measurement is committed next to it.**
 
 ### How you know it is working
 
@@ -447,6 +520,22 @@ the catches are the entire argument for the mechanisms.
   a physics counter beside a timing figure — so an identical result cannot be
   mistaken for a meaningful one.
 
+### State a threshold in units the corpus cannot inflate
+
+A bound recorded as a count decays silently as the data grows, and the decay
+looks like nothing at all. `atlas-optical` had `agree >= total - 3`, which was
+a real constraint when the catalogue held 51 lenses and 48 agreed. At 948 it
+meant nothing: the test's own note records that **895 of 948 is 94.4% against
+the old 94.1%** — the agreement had not weakened, the tolerance had — and that
+*"the test that passed at 51 would fail at 948 for measuring the same thing."*
+Converted to a rate, with that arithmetic written into the test.
+
+The same file carries the companion habit, which belongs in a ledger section:
+a measurement withheld for a year for disagreeing with theory was readmitted by
+**the specific agreement test its own refusal had demanded**. A refusal that
+names the evidence which would end it is a decision; one that does not is a
+verdict nobody can revisit.
+
 ### How you know it is working
 
 Open the ledger at a random old entry. If you cannot tell from it alone which
@@ -489,10 +578,33 @@ And it is enforced in both directions, in `tools/dioptrique_registry.py`:
   note, because the marker is also a claim;
 - a name with no stated basis at all is dropped.
 
-Note the choice of failure. An improperly marked value does not become an
-error for somebody to triage later; it **cannot reach the output**. That is
-§2 — refuse rather than approximate — applied to metadata, and it is stronger
-than a gate, because there is nothing to ignore.
+Note the choice of failure. An improperly marked *name* does not become an
+error for somebody to triage later; it cannot reach the output as a name.
+
+**Three limits on that example, because I checked it too late.** The rule runs
+at generation time only — no test asserts it, and it is merely executed
+incidentally when the suite imports the loader. On the table as it stands it
+fires **zero times**: every inferred name already carries its suffix, so the
+branch that drops one has never been watched working. And the consequence is
+not refusal but *substitution* — a dropped name falls back to the compilation's
+own title. Defensible, and not the same sentence. The cheap repair is §3's: one
+fixture row with an inferred source and no suffix, asserted to be dropped.
+
+### The stronger form: write the disagreement into the value's own provenance
+
+The same repository has a better instance of this section than the one above,
+and it is better precisely because it does not resolve anything. Where two
+source figures for one quantity disagree by more than 1%, the generator does not
+pick a side and does not average them: it **writes the disagreement into that
+value's provenance**, on 178 entries. A further 116 carry a marker saying the
+source gives no constringence, *"so the colour terms abstain."*
+
+That is §8 at full strength. The uncertainty is not a flag meaning "be careful";
+it is the actual state of the evidence, attached to the value, where the code
+that consumes it must deal with it. And abstention is a value — a computation
+that declines to produce a colour term is more useful than one that invents a
+plausible constringence, because the first can be counted and the second cannot
+be distinguished from a measurement.
 
 Where the upstream source expresses its own doubt, preserve that too. The
 same registry keeps the compilation's "names are given with reservations"

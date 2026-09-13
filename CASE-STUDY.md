@@ -94,15 +94,39 @@ The "silent" category is the subtle one. Three claims had no published figure
 either way, and that is recorded as a finding — where the tempting move is to
 read silence as agreement.
 
-### 1,040 of 1,043 lens prescriptions reproducing their source
+### 1,006 lens prescriptions agreeing with the compiler's arithmetic — not with the documented figure
 
-`atlas-optical` re-traced every historic prescription through its own surfaces
-and compared against the focal length its source documents independently —
-committed per entry, *"so that the tracing test compares this repository's
-numbers against the source's rather than against a copy of itself."*
+This entry is corrected from what I first published, and the correction is the
+more interesting half.
 
-Worst error 0.05%, median 0.0003%. The three that do not reproduce "are
-recorded as refusals with reasons rather than shipped."
+`atlas-optical` re-traces every historic prescription through its own surfaces
+and compares the result against a committed source figure. I described that
+figure as the focal length the source documents independently. Its input
+actually carries **two** — the figure the page documents, and the figure the
+compiler computed from the same prescription table — and the gate uses the
+**computed** one.
+
+| compared against | result |
+|---|---|
+| the compiler's computed figure (what the gate uses) | median **0.00033%**, worst **0.0500%**, n = 1,006 |
+| the figure the page documents (committed, reported, **not** gated) | **189 of 1,040** differ by ≥1%, **27** by ≥10%, worst **51.9%** |
+
+The first row is two implementations of one calculation agreeing — genuinely
+useful, and it catches a parse error, a sign convention or a unit. The second is
+what an external authority would have measured. The repository's own errata had
+already said so: *"a mistyped radius moves both numbers together and the check
+passes."*
+
+My 1,040-of-1,043 framing was right about the measurement and wrong about what
+it proves, and the rule in [METHOD.md](METHOD.md) §1 is now stated in the form
+that survives: **a committed source figure is an external authority only if the
+source derived it from something other than the input you are feeding it.**
+
+I also wrote that the three failures "are recorded as refusals with reasons
+rather than shipped." They are not: the thirty-four recorded refusals are pages
+that trace correctly and are undescribable, and the handful that fail to trace
+are printed to a console and filtered out — so neither their identity nor their
+reason survives in the repository.
 
 ### The audit's own controls: 11 of 12 on the source's own bytes
 
