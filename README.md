@@ -39,6 +39,7 @@ around it.
 | [FAILURE-MODES.md](FAILURE-MODES.md) | The catalogue: every way an agent's true report has been worthless, and the mechanism that catches each. |
 | [CASE-STUDY.md](CASE-STUDY.md) | Six real projects, measured — 743,605 lines written this way, and every defect the mechanisms caught. |
 | [ADOPTING.md](ADOPTING.md) | Retrofitting this onto a project that already exists, in an order that pays as it goes. |
+| [WITH-PARCELROUND.md](WITH-PARCELROUND.md) | How this fits with ParcelRound, the companion method for splitting work across several agents — what each adds to the other. |
 | [templates/](templates/README.md) | Drop-in files, two of them runnable: a stage runner, the generate-and-check pattern, planted-fault controls, a manifest, a ledger, the agent notes. |
 | [tools/check_claims.py](tools/check_claims.py) | This repo's own gate. It refuses a broken link or a stated line count that has drifted. |
 

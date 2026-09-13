@@ -132,14 +132,32 @@ def check_case_study_total(problems):
 
 
 def check_everything_referenced(problems):
+    """Every shipped file is linked from somewhere, root documents included.
+
+    The root documents are checked against the OTHER documents, not against
+    themselves - a file that merely mentions its own name is not reachable.
+    README.md is exempt because it is the entry point; nothing needs to point
+    at it.
+
+    The root half of this was added after WITH-PARCELROUND.md was written and
+    sat unreferenced while this check passed: the check was real, and its scope
+    was one step away from the claim it looked like it was making.
+    """
+    shipped = [q for q in list(ROOT.glob("templates/*")) + list(ROOT.glob("tools/*"))
+               if q.is_file()]
     body = "\n".join(d.read_text(encoding="utf-8") for d in DOCS)
-    shipped = [p for p in list(ROOT.glob("templates/*")) + list(ROOT.glob("tools/*"))
-               if p.is_file()]
-    for p in shipped:
-        rel = p.relative_to(ROOT).as_posix()
-        if rel not in body and p.name not in body:
+    for q in shipped:
+        rel = q.relative_to(ROOT).as_posix()
+        if rel not in body and q.name not in body:
             problems.append("nothing references %s" % rel)
-    return len(shipped)
+
+    roots = [q for q in ROOT.glob("*.md") if q.name != "README.md"]
+    for q in roots:
+        others = "\n".join(d.read_text(encoding="utf-8")
+                           for d in DOCS if d != q)
+        if q.name not in others:
+            problems.append("no other document references %s" % q.name)
+    return len(shipped) + len(roots)
 
 
 def check_scripts_parse(problems):

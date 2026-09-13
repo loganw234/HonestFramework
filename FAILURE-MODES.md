@@ -322,6 +322,38 @@ a plan.
 
 ---
 
+## I. The gap between gates
+
+The family that survives everything else in this document, because every
+individual check is real.
+
+### I1 — The seam that belonged to nobody
+
+A bit-identity defect that **five parcels, two verifiers, a follow-up parcel
+and 211 assertions all passed over.** It lived in a *combination* that two
+parcels' gates each excluded by construction: one parcel's file pinned the
+setting, the other's registered no force, and neither brief mentioned the
+other. Every gate was honest. Every gate was also, in that combination, not
+looking.
+
+A hundred-line seam test — written by the lead, because it belonged to no
+parcel — found it in seconds: 21 of 21 values differing at about 1e-4, a
+trajectory divergence rather than a last bit. The fix was three lines.
+
+**Defence.** Whenever work is split — across agents, across modules, across
+teams — the seam is a deliverable, and it is nobody's by default. Write the
+test that exercises the *combination* and assign it to whoever owns the split
+rather than to either side of it. And treat the symmetry as a smell: if two
+pieces each have a gate and nothing has a gate over both, that is the gap.
+
+This is the one failure mode that scales *with* how well the work was divided.
+Clean boundaries make it more likely, not less, because a clean boundary is
+precisely an agreement about what each side will not look at.
+([ParcelRound](https://github.com/loganw234/ParcelRound) traces this one end
+to end; [WITH-PARCELROUND.md](WITH-PARCELROUND.md) is how the two methods fit.)
+
+---
+
 ## The meta-failure
 
 **Reporting a safeguard as present because it was intended.** Twice in one

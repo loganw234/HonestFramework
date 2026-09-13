@@ -199,6 +199,40 @@ single day**. The modes are mundane:
 Every one of these reports success in a way an agent cannot distinguish from
 success, and neither can you.
 
+**And those are only the plumbing.** The harder family is a gate that runs
+correctly and tests nothing, and
+[ParcelRound](https://github.com/loganw234/ParcelRound)'s §5 found four of
+these in one round — each caught by the agent that wrote the code the gate was
+meant to hold down:
+
+- **Passing against itself.** The mode under test was silently ignored by the
+  implementation, so every case compared the default against the default.
+- **Proving nothing.** A case exercising a re-read triggered on step 1, when
+  the thing being re-read was still all zeros. Re-read zeros, got zeros,
+  passed.
+- **Vacuous through the observable.** A control was checked through a *rounded
+  view* of a wider state. The underlying difference existed and re-converged
+  below the view's last bit, so the control matched and could not fail. Fixed
+  by hashing the wide bytes.
+- **Inert by construction.** A configuration in which the quantity being tested
+  was *exactly* zero — so the obvious test would pass with nothing implemented
+  at all.
+
+Plus one a verifier found rather than a parcel: a **bit** comparison that could
+be swapped for a **value** comparison and still pass the entire suite, while
+silently breaking signed zero.
+
+**The worst shape is grammatical, not semantic: a case that *prints* what the
+code answers instead of *asserting* what it should.** It will go on printing
+whatever the code answers, forever, and look fine. One did exactly that — it
+listed what it assumed was refused and printed `-> NOT REFUSED, which is a
+bug` for anything accepted — and after a capability legitimately landed, it
+shipped that line about **correct** behaviour, accusing the library of a defect
+in the project's own published output, with the build exiting 0.
+
+Every case states the answer it expects, or it is documentation wearing a
+test's filename.
+
 ### How to build it
 
 - **Keep the break as a permanent negative control.** Not a one-off
@@ -220,6 +254,12 @@ success, and neither can you.
 - **Gate the gate's own plumbing.** If a suite reports results in a file,
   something must read the file, and something must prove the reader can say
   no. Both.
+- **Name the specific control when you delegate.** Not "test it properly" — the
+  control itself: *"a do-nothing routine must leave the run bit-identical to no
+  routine at all, and the active case must differ from the inactive one."* Then
+  require whoever does the work to build it, run it, **confirm it fails**,
+  and report both results. ParcelRound's rule, and the reason for it is exact:
+  a control described but not run is worth nothing, so ask for its output.
 
 ### How you know it is working
 
@@ -509,6 +549,39 @@ plausibility"**, with the key recording *how* each was caught (one fetched
 the Russian original; another found zero-hit searches for a section that does
 not exist). The same audits re-verified about eighty-six load-bearing quotes
 and found zero fabrications.
+
+### The judge's own failure mode
+
+A judge has a pathology of its own and it is not dishonesty: it is
+**rubber-stamping**, and its mirror image, **inventing findings under pressure
+to produce some**. ParcelRound, which runs a verifier agent between each parcel
+and the merge, states both and handles them with rules worth copying verbatim:
+
+- **It must re-run the gate itself, from a clean build**, rather than trust
+  pasted output. A result quoted in a report is not a result.
+- **It must not fix anything.** "A verifier that edits is a second author with
+  none of the first one's context, and you lose the independence you paid for."
+  It reports; someone else acts.
+- **"Found nothing" must be an acceptable, unpenalised answer.** A verifier
+  under pressure to produce findings invents them, which is worse than none.
+- **Require it to state what it actually ran, command by command.** That is the
+  difference between a review and an impression.
+
+Two findings from real runs are worth knowing about because they change what
+you ask for. First: **give it a numbered list to attack and expect its best
+work to be outside the list** — one run confirmed all eight items handed to it
+and found two genuine divergences nobody had thought to ask about. So name what
+you suspect, then ask explicitly what *else* is there. Second: **distinguish
+"the shipped code is right" from "the gate would catch it if it weren't"** —
+four of one run's findings were the second kind, which are the defects of the
+*next* change, and a verifier is the only role positioned to notice them.
+
+And a technique, because it replaces a judgement with a measurement: to prove a
+change did not affect a build it was not supposed to, **diff the preprocessed
+translation unit** at both commits rather than the source. In one case the same
+file compiled two ways, only one in scope; the preprocessed output was 3,610
+lines each and differed by a single line. Comparing the compiled object's hash
+is the same idea, cheaper.
 
 ### Why this is the load-bearing one for AI-heavy work
 
